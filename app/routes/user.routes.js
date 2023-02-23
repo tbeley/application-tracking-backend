@@ -10,18 +10,18 @@ module.exports = function (app) {
     next()
   })
 
-  app.get('/api/test/all', controller.allAccess)
+  app.get('/apply-tracking/api/test/all', controller.allAccess)
 
-  app.get('/api/test/user', [authJwt.verifyToken], controller.userBoard)
+  app.get('/apply-tracking/api/test/user', [authJwt.verifyToken], controller.userBoard)
 
   app.get(
-    '/api/test/mod',
+    '/apply-tracking/api/test/mod',
     [authJwt.verifyToken, authJwt.isModerator],
     controller.moderatorBoard
   )
 
   app.get(
-    '/api/test/admin',
+    '/apply-tracking/api/test/admin',
     [authJwt.verifyToken, authJwt.isAdmin],
     controller.adminBoard
   )

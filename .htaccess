@@ -1,0 +1,7 @@
+# CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/mlmx2356/apply-tracking"
+PassengerBaseURI "/."
+PassengerNodejs "/home/mlmx2356/nodevenv/apply-tracking/backend/18/bin/node"
+PassengerAppType node
+PassengerStartupFile /backend/app/server.js
+# CLOUDLINUX PASSENGER CONFIGURATION END
