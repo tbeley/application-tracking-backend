@@ -1,5 +1,5 @@
-if (typeof(PhusionPassenger) !== 'undefined') {
-    PhusionPassenger.configure({ autoInstall: false });
+if (typeof PhusionPassenger !== 'undefined') {
+  PhusionPassenger.configure({ autoInstall: false })
 }
 
 const express = require('express')
@@ -20,16 +20,22 @@ app.get('/apply-tracking', (req, res) => {
 require('./routes/auth.routes')(app)
 require('./routes/user.routes')(app)
 
-if (typeof(PhusionPassenger) !== 'undefined') {
-    app.listen('passenger');
-console.log(`Server is running with passenger`)
+if (typeof PhusionPassenger !== 'undefined') {
+  app.listen('passenger')
+  console.log(`Server is running with passenger`)
 } else {
-const PORT = process.env.PORT || 3030
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`)
-})
+  const PORT = process.env.PORT || 3030
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}.`)
+  })
 }
 
+// List all routes
+app._router.stack.forEach(function (r) {
+  if (r.route && r.route.path) {
+    console.log(r.route.path)
+  }
+})
 
 const db = require('./models')
 
