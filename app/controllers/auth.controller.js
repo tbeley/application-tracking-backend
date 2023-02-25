@@ -1,83 +1,46 @@
 const db = require('../models')
 const User = db.user
-const Role = db.role
 
-const Op = db.Sequelize.Op
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 
-var jwt = require('jsonwebtoken')
-var bcrypt = require('bcryptjs')
-
-exports.signup = (req, res) => {
-  User.create({
-    username: req.body.username,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8),
-  })
-    .then((user) => {
-      if (req.body.roles) {
-        Role.findAll({
-          where: {
-            name: {
-              [Op.or]: req.body.roles,
-            },
-          },
-        }).then((roles) => {
-          user.setRoles(roles).then(() => {
-            res.status(201).send({ message: "L'utilisateur a été enregistré!" })
-          })
-        })
-      } else {
-        user.setRoles([1]).then(() => {
-          res.status(201).send({ message: "L'utilisateur a été enregistré!" })
-        })
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({ message: err.message })
-    })
+const checkPassword = (password, hashedPassword) => {
+  return bcrypt.compareSync(password, hashedPassword)
 }
 
-exports.signin = (req, res) => {
-  User.findOne({
-    where: {
-      username: req.body.username,
-    },
-  })
-    .then((user) => {
-      if (!user) {
-        return res
-          .status(404)
-          .send({ message: "L'utilisateur n'a pas été trouvé!" })
-      }
-
-      var passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
-
-      if (!passwordIsValid) {
-        return res.status(401).send({
-          accessToken: null,
-          message: 'Mot de passe invalide!',
-        })
-      }
-
-      var token = jwt.sign({ id: user.id }, process.env.AUTH_SECRET, {
-        expiresIn: 86400, // 24 hours
-      })
-
-      var authorities = []
-      user.getRoles().then((roles) => {
-        for (let i = 0; i < roles.length; i++) {
-          authorities.push('ROLE_' + roles[i].name.toUpperCase())
-        }
-        res.status(200).send({
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          roles: authorities,
-          accessToken: token,
-        })
-      })
+exports.signin = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        username: req.body.username,
+      },
     })
-    .catch((err) => {
-      res.status(500).send({ message: err.message })
+
+    if (!user) {
+      return res.status(404).send({ message: "L'utilisateur n'a pas été trouvé!" })
+    }
+
+    const passwordIsValid = checkPassword(req.body.password, user.password)
+
+    if (!passwordIsValid) {
+      return res.status(401).send({
+        accessToken: null,
+        message: 'Mot de passe invalide!',
+      })
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.AUTH_SECRET, {
+      expiresIn: 86400, // 24 hours
     })
+
+    return res.status(200).send({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      accessToken: token,
+    })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).send({ message: 'Erreur lors de la connexion' })
+  }
 }

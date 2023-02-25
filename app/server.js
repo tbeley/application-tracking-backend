@@ -13,12 +13,8 @@ app.use(express.json())
 
 app.use(express.urlencoded({ extended: true }))
 
-app.get('/apply-tracking', (req, res) => {
-  res.json({ message: 'Hello World' })
-})
-
 require('./routes/auth.routes')(app)
-require('./routes/user.routes')(app)
+require('./routes/application.routes')(app)
 
 if (typeof PhusionPassenger !== 'undefined') {
   app.listen('passenger')
