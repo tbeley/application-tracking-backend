@@ -6,7 +6,7 @@ const validationSchema = Joi.object({
     'string.empty': 'Company is required.',
     'any.required': 'Company is required.',
   }),
-  company_infos: Joi.string().messages({
+  company_infos: Joi.string().allow('').messages({
     'string.base': 'Company infos must be a string.',
   }),
   job: Joi.string().required().messages({
@@ -24,13 +24,13 @@ const validationSchema = Joi.object({
     'string.empty': 'Method is required.',
     'any.required': 'Method is required.',
   }),
-  description: Joi.string().messages({
+  description: Joi.string().allow('').messages({
     'string.base': 'Description must be a string.',
   }),
-  contact: Joi.string().messages({
+  contact: Joi.string().allow('').messages({
     'string.base': 'Contact must be a string.',
   }),
-  comment: Joi.string().messages({
+  comment: Joi.string().allow('').messages({
     'string.base': 'Comment must be a string.',
   }),
   source: Joi.string().required().messages({
